@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Girl ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #0f172a; color: white; overflow-x: hidden; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .heart-bg { position: fixed; color: #ec4899; opacity: 0; animation: floatUp linear forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { transform: translateY(100vh); opacity: 0; } 50% { opacity: 0.6; } 100% { transform: translateY(-10vh); opacity: 0; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center relative bg-[url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat">
+    
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
+
+    <!-- Music Player (Hidden initially) -->
+    <audio id="bgMusic" loop>
+        <!-- Replace with your own MP3 link if needed -->
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_307996d953.mp3?filename=romantic-piano-111568.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Content Container -->
+    <main class="relative z-10 w-full max-w-md mx-auto p-6 flex flex-col gap-6 items-center text-center">
+        
+        <!-- Header -->
+        <div class="space-y-2 fade-in">
+            <h1 class="text-4xl md:text-5xl font-cursive text-pink-500">My Beautiful Girl</h1>
+            <p class="text-gray-300 text-sm tracking-widest uppercase">Dec 18th • Special Day</p>
+        </div>
+
+        <!-- 1. COUNTDOWN VIEW (Visible on 17th) -->
+        <div id="countdown-container" class="glass w-full p-8 rounded-2xl shadow-2xl fade-in">
+            <h2 class="text-xl mb-4 text-purple-200">Countdown to Midnight 🌙</h2>
+            <div class="flex justify-between text-center">
+                <div><span id="hours" class="text-4xl font-bold text-white">00</span><br><span class="text-xs text-pink-400">HRS</span></div>
+                <div><span id="minutes" class="text-4xl font-bold text-white">00</span><br><span class="text-xs text-pink-400">MIN</span></div>
+                <div><span id="seconds" class="text-4xl font-bold text-white">00</span><br><span class="text-xs text-pink-400">SEC</span></div>
+            </div>
+            <p class="mt-6 text-sm text-gray-400 italic">"I can't wait to celebrate you."</p>
+        </div>
+
+        <!-- 2. BIRTHDAY VIEW (Visible on 18th) -->
+        <div id="birthday-container" class="hidden w-full flex-col gap-6 fade-in">
+            <div class="glass p-6 rounded-2xl border-pink-500/30 shadow-[0_0_30px_rgba(236,72,153,0.3)]">
+                <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 mb-4">
+                    Happy Birthday! 🎂
+                </h2>
+                <!-- UPDATE YOUR MESSAGE HERE -->
+                <p class="text-gray-200 leading-relaxed text-sm text-left">
+                    To the girl who stole my heart, Happy Birthday Sayali, I love you ❤️ : <br><br>
+                    Every day with you is a gift, but today is extra special because it's the day the world was blessed with you. You make my life brighter, happier, and full of love. I love you more than words can say. ❤️
+                </p>
+                <div class="mt-4 text-right">
+                    <span class="font-cursive text-2xl text-pink-500">- Your Boyfriend</span>
+                </div>
+            </div>
+
+            <!-- Photo Area (Replace URLs with your photos) -->
+            <div class="relative w-full h-64 rounded-xl overflow-hidden group shadow-2xl">
+                <img src="us.jpg" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                    <span class="text-white font-medium">Making memories with you...</span>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button onclick="celebrate()" class="w-full py-4 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full font-bold text-lg shadow-lg hover:scale-105 transition-transform">
+                <i class="fa-solid fa-gift mr-2"></i> Send My Love
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Music Toggle Button -->
+    <button id="musicBtn" class="fixed bottom-6 right-6 z-50 w-12 h-12 glass rounded-full flex items-center justify-center text-pink-400 animate-bounce">
+        <i class="fa-solid fa-play"></i>
+    </button>
+
+    <script>
+        // CONFIGURATION
+        const targetDate = new Date("December 18, 2025 00:00:00").getTime();
+        
+        // DOM ELEMENTS
+        const countdownContainer = document.getElementById('countdown-container');
+        const birthdayContainer = document.getElementById('birthday-container');
+        const musicBtn = document.getElementById('musicBtn');
+        const audio = document.getElementById('bgMusic');
+
+        // ANIMATION INIT
+        gsap.from(".fade-in", {y: 30, opacity: 0, duration: 1.5, stagger: 0.2});
+
+        // COUNTDOWN LOGIC
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                // IT IS BIRTHDAY!
+                clearInterval(timer);
+                countdownContainer.classList.add('hidden'); // Hide countdown
+                birthdayContainer.classList.remove('hidden'); // Show birthday
+                birthdayContainer.classList.add('flex');
+                
+                // Auto trigger confetti if just opened
+                celebrate();
+            } else {
+                // UPDATE TIMER
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+                document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+                document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+            }
+        }, 1000);
+
+        // MUSIC LOGIC
+        let isPlaying = false;
+        musicBtn.addEventListener('click', () => {
+            if(isPlaying) { audio.pause(); musicBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; musicBtn.classList.add('animate-bounce'); }
+            else { audio.play(); musicBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; musicBtn.classList.remove('animate-bounce'); }
+            isPlaying = !isPlaying;
+        });
+
+        // CONFETTI CELEBRATION
+        function celebrate() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ec4899', '#a855f7', '#ffffff'] });
+            // Create Floating Hearts
+            for(let i=0; i<15; i++) {
+                let heart = document.createElement('i');
+                heart.className = "fa-solid fa-heart heart-bg";
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.fontSize = Math.random() * 20 + 10 + "px";
+                heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+                document.body.appendChild(heart);
+            }
+        }
+    </script>
+</body>
+</html>
